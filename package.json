@@ -3,10 +3,7 @@
   "version": "12.2.0",
   "description": "An isomorphic http client for Svelte apps",
   "type": "module",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/beyonk-adventures/http.git"
-  },
+  "repository": "https://github.com/beyonk/http.git",
   "files": [
     "dist"
   ],
@@ -56,5 +53,5 @@
   "volta": {
     "node": "18.15.0"
   },
-  "packageManager": "pnpm@10.12.0"
+  "packageManager": "pnpm@10.33.0"
 }
