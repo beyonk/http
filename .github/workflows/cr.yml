@@ -10,9 +10,10 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
 
-      - uses: pnpm/action-setup@v5
-        with:
-          run_install: true
+      - name: set up node and pnpm
+        run: |
+          corepack enable
+          pnpm i
 
       - name: Compile
         run: pnpm build

@@ -12,19 +12,13 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v5
-      
-      - name: setup node
-        uses: actions/setup-node@v6
 
-      - name: set up package auth
+      - name: set up node and pnpm
         run: |
+          corepack enable
           pnpm config set '//registry.npmjs.org/:_authToken' "${{ secrets.NPM_TOKEN }}"
           pnpm config set '//npm.pkg.github.com/:_authToken' "${{ secrets.GITHUB_TOKEN }}"
-
-      - name: setup pnpm
-        uses: pnpm/action-setup@v5
-        with:
-          run_install: true
+          pnpm i
 
       - name: build
         run: pnpm build
