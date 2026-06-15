@@ -50,5 +50,12 @@
   ],
   "author": "Antony Jones",
   "license": "MIT",
-  "packageManager": "pnpm@10.33.0"
+  "packageManager": "pnpm@10.33.0",
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "25.9.0",
+      "onFail": "error"
+    }
+  }
 }
