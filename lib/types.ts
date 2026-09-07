@@ -76,6 +76,8 @@ export type ErrorHandlers = {
   expectationFailed?: ErrorHandler;
   badData?: ErrorHandler;
   tooManyRequests?: ErrorHandler;
+  /** Called when no request-level or status-specific handler matches */
+  default?: ErrorHandler;
   [key: string]: ErrorHandler | undefined;
 };
 
