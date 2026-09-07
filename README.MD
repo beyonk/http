@@ -240,6 +240,19 @@ Names are the same as the local handlers:
     .get()
 ```
 
+A global `default` handler catches anything that no other handler does. A request-level `.default()` takes precedence over it, but global status handlers (such as `notFound`) do not check it.
+
+```js
+  Api.configure({
+    baseUrl: 'https://example.com/your/api/base',
+    handlers: {
+      default (e) {
+        throw error(500, e.message)
+      }
+    }
+  })
+```
+
 ## Retries
 
 The http client can retry if a network error is encountered. The default is `retry: false`, and requests won't be retried.
