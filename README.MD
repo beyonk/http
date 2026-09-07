@@ -192,6 +192,8 @@ Handlers have a signature with two items:
 })
 ```
 
+Every error carries the request that failed as `e.request` (`{ method, url }`), and HTTP failures also carry `e.status` and the parsed response as `e.body`. Errors thrown by `fetch` itself, such as network failures or aborts, have `e.request` but no `e.status`.
+
 ctx can be whatever you want really - it is whatever you pass in as `context(...)`.
 
 However, if the `context` object you pass in has a `fetch` function, this is used as the `fetch` for XHR requests.
