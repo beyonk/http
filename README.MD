@@ -198,6 +198,8 @@ ctx can be whatever you want really - it is whatever you pass in as `context(...
 
 However, if the `context` object you pass in has a `fetch` function, this is used as the `fetch` for XHR requests.
 
+If it has a `logger` with an `error(details, message)` method, such as a pino logger, every failure that reaches a `default` handler (request-level or global) is logged through it before the handler runs, with `err`, `status`, `method`, `url` and `body`. Without one the console is used. Failures caught by a status-specific handler such as `.notFound()` are not logged.
+
 ```js
 export async function preload () {
   await Api

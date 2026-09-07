@@ -52,6 +52,8 @@ export type RequestConfig = {
 export type ApiContext = {
   /** Fetch client */
   fetch?: FetchClient;
+  /** Logger for failed requests, defaults to console */
+  logger?: { error: (details: Record<string, any>, message: string) => void };
   /** Additional context properties */
   [key: string]: any;
 };
