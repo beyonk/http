@@ -10,7 +10,7 @@ export type ApiOptions = {
   mock?: FetchClient;
   /** Fetch client for HTTP requests */
   fetch?: FetchClient;
-  /** Whether to retry failed requests */
+  /** Retry settings. Omit to use the defaults (1 retry on ECONNRESET for GET, HEAD, OPTIONS), or pass false to never retry */
   retry?: RetryOptions | false;
   /** Whether to parse error responses as JSON */
   parseErrors?: boolean;
@@ -22,11 +22,11 @@ export type ApiOptions = {
  * Retry configuration
  */
 export type RetryOptions = {
-  /** Number of retry attempts */
-  attempts: number;
-  /** Error codes to retry on */
-  errors: string[];
-  /** HTTP methods to retry, defaults to GET, HEAD and OPTIONS */
+  /** Number of retries after the first request. 0 never retries. Defaults to 1 */
+  attempts?: number;
+  /** Node network error codes to retry on, matched on the error or its cause. Defaults to ['ECONNRESET'] */
+  errors?: string[];
+  /** HTTP methods that may be retried. Defaults to ['GET', 'HEAD', 'OPTIONS'] */
   methods?: string[];
 };
 
