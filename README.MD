@@ -259,23 +259,38 @@ A global `default` handler catches anything that no other handler does. A reques
 
 ## Retries
 
-The http client can retry if a network error is encountered. The default is `retry: false`, and requests won't be retried.
+Retries are on by default (since 13.0.0). Configure them with the `retry` option:
 
-Configure it as follows:
+```js
+retry: {
+  attempts: 1,                          // retries after the first request
+  errors: [ 'ECONNRESET' ],             // Node network error codes to retry on
+  methods: [ 'GET', 'HEAD', 'OPTIONS' ] // HTTP methods that may be retried
+}
+```
+
+These are the defaults. Leave `retry` out to use them, pass only the settings you want to change, or pass `false` to never retry:
 
 ```js
 import Api from '@beyonk/http'
 
-Api.configure({
-  retry: {
-    attempts: 3 // How many times to retry before giving up
-    errors: [ 'ECONNRESET' ] // A list of error codes
-  }
-})
+Api.configure({})                                              // defaults: 1 retry on ECONNRESET for GET, HEAD, OPTIONS
+Api.configure({ retry: { attempts: 2 } })                      // up to 2 retries, other settings unchanged
+Api.configure({ retry: { errors: [ 'ECONNRESET', 'EPIPE' ] } }) // also retry EPIPE
+Api.configure({ retry: false })                                // never retry
 ```
 
-errors is an array of any number of the [nodejs network error codes](https://nodejs.org/api/errors.html#errors_common_system_errors)
+| Setting | Meaning | Default |
+| --- | --- | --- |
+| `attempts` | Number of retries after the first request. `1` sends at most 2 requests, `0` never retries | `1` |
+| `errors` | [Node network error codes](https://nodejs.org/api/errors.html#errors_common_system_errors) to retry on, matched on the error or its `cause` | `[ 'ECONNRESET' ]` |
+| `methods` | HTTP methods that may be retried. Only add a method if repeating it is safe for every endpoint | `[ 'GET', 'HEAD', 'OPTIONS' ]` |
 
+Good to know:
+
+- Timeouts and HTTP error responses (4xx, 5xx) aren't retried.
+- Retries only apply server-side, as browsers don't expose network error codes.
+- Each retry logs a warning, e.g. `Got ECONNRESET when calling https://…/api/v1/apps. Retrying request (1/1)`.
 
 ## Parsing error payloads
 
