@@ -270,11 +270,14 @@ Api.configure({
   retry: {
     attempts: 3 // How many times to retry before giving up
     errors: [ 'ECONNRESET' ] // A list of error codes
+    methods: [ 'GET', 'HEAD', 'OPTIONS' ] // Optional, defaults to these idempotent methods
   }
 })
 ```
 
-errors is an array of any number of the [nodejs network error codes](https://nodejs.org/api/errors.html#errors_common_system_errors)
+errors is an array of any number of the [nodejs network error codes](https://nodejs.org/api/errors.html#errors_common_system_errors). The code is matched on the error or on its `cause`, which is where Node's `fetch` puts it (`TypeError: fetch failed`).
+
+Only idempotent methods are retried by default, so a write that reached the server isn't sent twice. Add other methods to `methods` only where the endpoint is safe to repeat.
 
 
 ## Parsing error payloads

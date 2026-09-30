@@ -26,6 +26,8 @@ export type RetryOptions = {
   attempts: number;
   /** Error codes to retry on */
   errors: string[];
+  /** HTTP methods to retry, defaults to GET, HEAD and OPTIONS */
+  methods?: string[];
 };
 
 /**
