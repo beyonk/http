@@ -194,6 +194,8 @@ Handlers have a signature with two items:
 
 Every error carries the request that failed as `e.request` (`{ method, url }`), and HTTP failures also carry `e.status` and the parsed response as `e.body`. Errors thrown by `fetch` itself, such as network failures or aborts, have `e.request` but no `e.status`.
 
+A successful (2xx) response whose body failed to download or parse is surfaced as a `BodyReadError` carrying the underlying error as `e.cause`, and reaches the `bodyRead` handler, falling back to `default`.
+
 ctx can be whatever you want really - it is whatever you pass in as `context(...)`.
 
 However, if the `context` object you pass in has a `fetch` function, this is used as the `fetch` for XHR requests.
@@ -289,7 +291,7 @@ Api.configure({ retry: false })                                // never retry
 Good to know:
 
 - Timeouts and HTTP error responses (4xx, 5xx) aren't retried.
-- Retries only apply server-side, as browsers don't expose network error codes.
+- Retries only apply server-side for network errors, as browsers don't expose error codes. A lost response body (headers received, body failed to download or parse) is retried on safe methods in both environments.
 - Each retry logs a warning, e.g. `Got ECONNRESET when calling https://…/api/v1/apps. Retrying request (1/1)`.
 
 ## Parsing error payloads
