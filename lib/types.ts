@@ -24,7 +24,7 @@ export type ApiOptions = {
 export type RetryOptions = {
   /** Number of retries after the first request. 0 never retries. Defaults to 1 */
   attempts?: number;
-  /** Node network error codes to retry on, matched on the error or its cause. Defaults to ['ECONNRESET'] */
+  /** Node network error codes to retry on, matched on the error or its cause. Defaults to ['ECONNRESET']. A response body lost mid-download on GET, HEAD, OPTIONS always retries, regardless of this list */
   errors?: string[];
   /** HTTP methods that may be retried. Defaults to ['GET', 'HEAD', 'OPTIONS'] */
   methods?: string[];
