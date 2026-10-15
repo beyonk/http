@@ -10,7 +10,7 @@ export type ApiOptions = {
   mock?: FetchClient;
   /** Fetch client for HTTP requests */
   fetch?: FetchClient;
-  /** Retry settings. Omit to use the defaults (1 retry on ECONNRESET for GET, HEAD, OPTIONS; failed body reads on safe methods also retry), or pass false to never retry */
+  /** Retry settings. Omit to use the defaults (1 retry on ECONNRESET for GET, HEAD, OPTIONS), or pass false to never retry */
   retry?: RetryOptions | false;
   /** Whether to parse error responses as JSON */
   parseErrors?: boolean;
@@ -24,7 +24,7 @@ export type ApiOptions = {
 export type RetryOptions = {
   /** Number of retries after the first request. 0 never retries. Defaults to 1 */
   attempts?: number;
-  /** Node network error codes to retry on, matched on the error or its cause. Defaults to ['ECONNRESET']. Failed body reads on safe methods always retry, regardless of this list */
+  /** Node network error codes to retry on, matched on the error or its cause. Defaults to ['ECONNRESET']. A BodyReadError on GET, HEAD, OPTIONS always retries, regardless of this list */
   errors?: string[];
   /** HTTP methods that may be retried. Defaults to ['GET', 'HEAD', 'OPTIONS'] */
   methods?: string[];
@@ -80,8 +80,6 @@ export type ErrorHandlers = {
   expectationFailed?: ErrorHandler;
   badData?: ErrorHandler;
   tooManyRequests?: ErrorHandler;
-  /** Called when a 2xx response body could not be downloaded or parsed */
-  bodyRead?: ErrorHandler;
   /** Called when no request-level or status-specific handler matches */
   default?: ErrorHandler;
   [key: string]: ErrorHandler | undefined;
