@@ -80,6 +80,8 @@ export type ErrorHandlers = {
   expectationFailed?: ErrorHandler;
   badData?: ErrorHandler;
   tooManyRequests?: ErrorHandler;
+  /** Called when a 2xx response body could not be downloaded or parsed */
+  bodyRead?: ErrorHandler;
   /** Called when no request-level or status-specific handler matches */
   default?: ErrorHandler;
   [key: string]: ErrorHandler | undefined;
