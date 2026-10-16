@@ -222,20 +222,20 @@ export async function preload () {
 
 ### At a global level
 
-Request local error handlers override global error handlers, but if a local error handler are not specified, these will be called instead, if it exists.
+Request-level handlers override global ones. If a request doesn't set one, the global handler for that status runs, if there is one.
 
-Names are the same as the local handlers:
+Global status handlers are keyed by error type, imported from the library:
 
 ```js
-  import Api from '@beyonk/http'
+  import Api, { PaymentRequired } from '@beyonk/http'
   import { redirect } from '@sveltejs/kit'
 
   Api.configure({
     baseUrl: 'https://example.com/your/api/base',
     handlers: {
-      paymentRequired(e => {
+      [PaymentRequired] (e) {
         throw redirect(307, '/checkout')
-      })
+      }
     }
   })
 
@@ -244,7 +244,21 @@ Names are the same as the local handlers:
     .get()
 ```
 
-A global `default` handler catches anything that no other handler does. A request-level `.default()` takes precedence over it, but global status handlers (such as `notFound`) do not check it.
+| Status | Request-level | Global key |
+| --- | --- | --- |
+| 401 | `.accessDenied()` | `[AccessDenied]` |
+| 402 | `.paymentRequired()` | `[PaymentRequired]` |
+| 403 | `.forbidden()` | `[Forbidden]` |
+| 404 | `.notFound()` | `[NotFound]` |
+| 406 | `.notAcceptable()` | `[NotAcceptable]` |
+| 409 | `.conflict()` | `[Conflict]` |
+| 410 | `.gone()` | `[Gone]` |
+| 412 | `.preconditionFailed()` | `[PreconditionFailed]` |
+| 417 | `.expectationFailed()` | `[ExpectationFailed]` |
+| 422 | `.badData()` | `[BadData]` |
+| 429 | `.tooManyRequests()` | `[TooManyRequests]` |
+
+A global `default` handler catches anything that no other handler does. A request-level `.default()` takes precedence over it, but global status handlers (such as `[NotFound]`) do not check it.
 
 ```js
   Api.configure({
@@ -319,6 +333,21 @@ Api.configure({
   parseErrors: false
 })
 ```
+
+## Upgrading to 14
+
+Global status handlers are keyed by the exported error types instead of by name. A handler keyed by name is ignored, so update every `Api.configure()`:
+
+```js
+// 13
+Api.configure({ handlers: { accessDenied: fn } })
+
+// 14
+import Api, { AccessDenied } from '@beyonk/http'
+Api.configure({ handlers: { [AccessDenied]: fn } })
+```
+
+Request-level handlers and `default` are unchanged.
 
 ## Running Tests
 

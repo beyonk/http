@@ -1,4 +1,5 @@
 import { HttpError } from ".";
+import type { AccessDenied, PaymentRequired, Forbidden, NotFound, NotAcceptable, Conflict, Gone, PreconditionFailed, ExpectationFailed, BadData, TooManyRequests } from ".";
 
 /**
  * API Configuration options
@@ -69,20 +70,19 @@ export type ErrorHandler = (error: HttpError, context?: ApiContext) => any;
  * Map of error handlers
  */
 export type ErrorHandlers = {
-  accessDenied?: ErrorHandler;
-  paymentRequired?: ErrorHandler;
-  forbidden?: ErrorHandler;
-  notFound?: ErrorHandler;
-  notAcceptable?: ErrorHandler;
-  conflict?: ErrorHandler;
-  gone?: ErrorHandler;
-  preconditionFailed?: ErrorHandler;
-  expectationFailed?: ErrorHandler;
-  badData?: ErrorHandler;
-  tooManyRequests?: ErrorHandler;
+  [AccessDenied]?: ErrorHandler;
+  [PaymentRequired]?: ErrorHandler;
+  [Forbidden]?: ErrorHandler;
+  [NotFound]?: ErrorHandler;
+  [NotAcceptable]?: ErrorHandler;
+  [Conflict]?: ErrorHandler;
+  [Gone]?: ErrorHandler;
+  [PreconditionFailed]?: ErrorHandler;
+  [ExpectationFailed]?: ErrorHandler;
+  [BadData]?: ErrorHandler;
+  [TooManyRequests]?: ErrorHandler;
   /** Called when no request-level or status-specific handler matches */
   default?: ErrorHandler;
-  [key: string]: ErrorHandler | undefined;
 };
 
 /**
