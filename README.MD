@@ -200,7 +200,7 @@ ctx can be whatever you want really - it is whatever you pass in as `context(...
 
 However, if the `context` object you pass in has a `fetch` function, this is used as the `fetch` for XHR requests.
 
-If it has a `logger` with an `error(details, message)` method, such as a pino logger, every failure that reaches a `default` handler (request-level or global) is logged through it before the handler runs, with `err`, `status`, `method`, `url` and `body`. Without one the console is used. Failures caught by a status-specific handler such as `.notFound()` are not logged.
+If it has a `logger` with an `error(details, message)` method, such as a pino logger, every failure that reaches a `default` handler (on the request or in `Api.configure()`) is logged through it before the handler runs, with `err`, `status`, `method`, `url` and `body`. Without one the console is used. Failures caught by a status-specific handler such as `.notFound()` are not logged.
 
 ```js
 export async function preload () {
@@ -222,11 +222,11 @@ export async function preload () {
 }
 ```
 
-### At a global level
+### In `Api.configure()`
 
-Request-level handlers override global ones. If a request doesn't set one, the global handler for that status runs, if there is one.
+A handler on the request (such as `.notFound()`) wins over one in `Api.configure()`. If the request doesn't have one, the handler in `Api.configure()` for that status runs, if there is one.
 
-Global status handlers are keyed by error type, imported from the library:
+Handlers in `Api.configure()` are keyed by error type, imported from the library:
 
 ```js
   import Api, { PaymentRequired } from '@beyonk/http'
@@ -246,7 +246,7 @@ Global status handlers are keyed by error type, imported from the library:
     .get()
 ```
 
-| Status | Request-level | Global key |
+| Status | On the request | In `Api.configure()` |
 | --- | --- | --- |
 | 401 | `.accessDenied()` | `[AccessDenied]` |
 | 402 | `.paymentRequired()` | `[PaymentRequired]` |
@@ -260,7 +260,7 @@ Global status handlers are keyed by error type, imported from the library:
 | 422 | `.badData()` | `[BadData]` |
 | 429 | `.tooManyRequests()` | `[TooManyRequests]` |
 
-A global `default` handler catches anything that no other handler does. A request-level `.default()` takes precedence over it, but global status handlers (such as `[NotFound]`) do not check it.
+A `default` in `Api.configure()` catches anything no other handler does. A `.default()` on the request wins over it, but a status handler in `Api.configure()` (such as `[NotFound]`) still wins over a `.default()` on the request.
 
 ```js
   Api.configure({
@@ -338,7 +338,7 @@ Api.configure({
 
 ## Upgrading to 14
 
-Global status handlers are keyed by the exported error types instead of by name. A handler keyed by name is ignored, so update every `Api.configure()`:
+Handlers in `Api.configure()` are keyed by the exported error types instead of by name. A handler keyed by name is ignored, so update every `Api.configure()`:
 
 ```js
 // 13
@@ -349,7 +349,7 @@ import Api, { AccessDenied } from '@beyonk/http'
 Api.configure({ handlers: { [AccessDenied]: fn } })
 ```
 
-Request-level handlers and `default` are unchanged.
+Handlers on the request (such as `.notFound()`) and `default` are unchanged.
 
 ## Running Tests
 
