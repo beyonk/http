@@ -336,7 +336,7 @@ Api.configure({
 
 ## Upgrading to 14
 
-Handlers in `Api.configure()` are keyed by the exported error types instead of by name. A handler keyed by name is ignored, so update every `Api.configure()`:
+Handlers in `Api.configure()` are keyed by the exported error types instead of by name. `Api.configure()` throws if any handler other than `default` is keyed by name, so update every call:
 
 ```js
 // 13
