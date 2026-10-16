@@ -1,4 +1,5 @@
 import { HttpError } from ".";
+import type { AccessDenied, PaymentRequired, Forbidden, NotFound, NotAcceptable, Conflict, Gone, PreconditionFailed, ExpectationFailed, BadData, TooManyRequests } from ".";
 
 /**
  * API Configuration options
@@ -14,7 +15,7 @@ export type ApiOptions = {
   retry?: RetryOptions | false;
   /** Whether to parse error responses as JSON */
   parseErrors?: boolean;
-  /** Global error handlers */
+  /** Error handlers for every request, keyed by error type */
   handlers?: ErrorHandlers;
 };
 
@@ -69,20 +70,19 @@ export type ErrorHandler = (error: HttpError, context?: ApiContext) => any;
  * Map of error handlers
  */
 export type ErrorHandlers = {
-  accessDenied?: ErrorHandler;
-  paymentRequired?: ErrorHandler;
-  forbidden?: ErrorHandler;
-  notFound?: ErrorHandler;
-  notAcceptable?: ErrorHandler;
-  conflict?: ErrorHandler;
-  gone?: ErrorHandler;
-  preconditionFailed?: ErrorHandler;
-  expectationFailed?: ErrorHandler;
-  badData?: ErrorHandler;
-  tooManyRequests?: ErrorHandler;
-  /** Called when no request-level or status-specific handler matches */
+  [AccessDenied]?: ErrorHandler;
+  [PaymentRequired]?: ErrorHandler;
+  [Forbidden]?: ErrorHandler;
+  [NotFound]?: ErrorHandler;
+  [NotAcceptable]?: ErrorHandler;
+  [Conflict]?: ErrorHandler;
+  [Gone]?: ErrorHandler;
+  [PreconditionFailed]?: ErrorHandler;
+  [ExpectationFailed]?: ErrorHandler;
+  [BadData]?: ErrorHandler;
+  [TooManyRequests]?: ErrorHandler;
+  /** Called when no other handler matches, on the request or here */
   default?: ErrorHandler;
-  [key: string]: ErrorHandler | undefined;
 };
 
 /**
