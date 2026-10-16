@@ -15,7 +15,7 @@ export type ApiOptions = {
   retry?: RetryOptions | false;
   /** Whether to parse error responses as JSON */
   parseErrors?: boolean;
-  /** Global error handlers */
+  /** Error handlers for every request, keyed by error type */
   handlers?: ErrorHandlers;
 };
 
@@ -81,7 +81,7 @@ export type ErrorHandlers = {
   [ExpectationFailed]?: ErrorHandler;
   [BadData]?: ErrorHandler;
   [TooManyRequests]?: ErrorHandler;
-  /** Called when no request-level or status-specific handler matches */
+  /** Called when no other handler matches, on the request or here */
   default?: ErrorHandler;
 };
 
