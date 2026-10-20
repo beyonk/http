@@ -200,7 +200,7 @@ ctx can be whatever you want really - it is whatever you pass in as `context(...
 
 However, if the `context` object you pass in has a `fetch` function, this is used as the `fetch` for XHR requests.
 
-If it has a `logger` with an `error(details, message)` method, such as a pino logger, every failure that reaches a `default` handler (request-level or global) is logged through it before the handler runs, with `err`, `status`, `method`, `url` and `body`. Without one the console is used. Failures caught by a status-specific handler such as `.notFound()` are not logged.
+If it has a `logger` with an `error(details, message)` method, such as a pino logger, every failure that reaches a `default` handler (on the request or in `Api.configure()`) is logged through it before the handler runs, with `err`, `status`, `method`, `url` and `body`. Without one the console is used. Failures caught by a status-specific handler such as `.notFound()` are not logged.
 
 ```js
 export async function preload () {
@@ -222,22 +222,22 @@ export async function preload () {
 }
 ```
 
-### At a global level
+### In `Api.configure()`
 
-Request local error handlers override global error handlers, but if a local error handler are not specified, these will be called instead, if it exists.
+A handler on the request (such as `.notFound()`) wins over one in `Api.configure()`. If the request doesn't have one, the handler in `Api.configure()` for that status runs, if there is one.
 
-Names are the same as the local handlers:
+Handlers in `Api.configure()` are keyed by error type, imported from the library:
 
 ```js
-  import Api from '@beyonk/http'
+  import Api, { PaymentRequired } from '@beyonk/http'
   import { redirect } from '@sveltejs/kit'
 
   Api.configure({
     baseUrl: 'https://example.com/your/api/base',
     handlers: {
-      paymentRequired(e => {
+      [PaymentRequired] (e) {
         throw redirect(307, '/checkout')
-      })
+      }
     }
   })
 
@@ -246,7 +246,21 @@ Names are the same as the local handlers:
     .get()
 ```
 
-A global `default` handler catches anything that no other handler does. A request-level `.default()` takes precedence over it, but global status handlers (such as `notFound`) do not check it.
+| Status | On the request | In `Api.configure()` |
+| --- | --- | --- |
+| 401 | `.accessDenied()` | `[AccessDenied]` |
+| 402 | `.paymentRequired()` | `[PaymentRequired]` |
+| 403 | `.forbidden()` | `[Forbidden]` |
+| 404 | `.notFound()` | `[NotFound]` |
+| 406 | `.notAcceptable()` | `[NotAcceptable]` |
+| 409 | `.conflict()` | `[Conflict]` |
+| 410 | `.gone()` | `[Gone]` |
+| 412 | `.preconditionFailed()` | `[PreconditionFailed]` |
+| 417 | `.expectationFailed()` | `[ExpectationFailed]` |
+| 422 | `.badData()` | `[BadData]` |
+| 429 | `.tooManyRequests()` | `[TooManyRequests]` |
+
+A `default` in `Api.configure()` catches anything no other handler does. A `.default()` on the request wins over it, but a status handler in `Api.configure()` (such as `[NotFound]`) still wins over a `.default()` on the request.
 
 ```js
   Api.configure({
@@ -321,6 +335,21 @@ Api.configure({
   parseErrors: false
 })
 ```
+
+## Upgrading to 14
+
+Handlers in `Api.configure()` are keyed by the exported error types instead of by name. `Api.configure()` throws if any handler other than `default` is keyed by name, so update every call:
+
+```js
+// 13
+Api.configure({ handlers: { accessDenied: fn } })
+
+// 14
+import Api, { AccessDenied } from '@beyonk/http'
+Api.configure({ handlers: { [AccessDenied]: fn } })
+```
+
+Handlers on the request (such as `.notFound()`) and `default` are unchanged.
 
 ## Running Tests
 
