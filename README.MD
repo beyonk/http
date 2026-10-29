@@ -308,6 +308,18 @@ Good to know:
 - Retries only apply server-side, as browsers don't expose network error codes. The exception is a response body lost mid-download, which is retried in both environments, but only for GET, HEAD and OPTIONS.
 - Each retry logs a warning, e.g. `Got ECONNRESET when calling https://…/api/v1/apps. Retrying request (1/1)`.
 
+## Timeouts
+
+There's no timeout by default. Set one for every request with the `timeout` option, or for a single request with `.timeout()`, which takes precedence:
+
+```js
+Api.configure({ timeout: 10000 })
+
+await api.endpoint('integrations/byk-light').timeout(5000).get()
+```
+
+A request that runs over is aborted and goes to your handlers as a `TimeoutError` with no `e.status`. The time covers any retries too.
+
 ## Parsing error payloads
 
 As of v7.0.0 the library defaults to parsing error payloads as JSON. This means you can use the data returned in your response.
