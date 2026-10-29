@@ -15,6 +15,8 @@ export type ApiOptions = {
   retry?: RetryOptions | false;
   /** Whether to parse error responses as JSON */
   parseErrors?: boolean;
+  /** Abort every request that takes longer than this many milliseconds. No timeout when omitted */
+  timeout?: number;
   /** Error handlers for every request, keyed by error type */
   handlers?: ErrorHandlers;
 };
@@ -47,6 +49,8 @@ export type RequestConfig = {
   headers: Record<string, string>;
   /** Override options */
   overrides: Record<string, any>;
+  /** Timeout in milliseconds for this request */
+  timeout: number | null;
 };
 
 /**
