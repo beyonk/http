@@ -304,8 +304,8 @@ Api.configure({ retry: false })                                // never retry
 
 Good to know:
 
-- Timeouts and HTTP error responses (4xx, 5xx) aren't retried.
-- Retries only apply server-side, as browsers don't expose network error codes. The exception is a response body lost mid-download, which is retried in both environments, but only for GET, HEAD and OPTIONS.
+- HTTP error responses (4xx, 5xx) aren't retried. A [timeout](#timeouts) is, but only for GET, HEAD and OPTIONS.
+- Retries only apply server-side, as browsers don't expose network error codes. The exceptions are a response body lost mid-download and a timeout, which are retried in both environments, but only for GET, HEAD and OPTIONS.
 - Each retry logs a warning, e.g. `Got ECONNRESET when calling https://…/api/v1/apps. Retrying request (1/1)`.
 
 ## Timeouts
@@ -318,7 +318,7 @@ Api.configure({ timeout: 10000 })
 await api.endpoint('integrations/byk-light').timeout(5000).get()
 ```
 
-A request that runs over is aborted and goes to your handlers as a `TimeoutError` with no `e.status`. The time covers any retries too.
+The timeout applies to each attempt. A GET, HEAD or OPTIONS request that runs over is aborted and retried with a fresh timeout, following the `retry` settings, so `.timeout(5000)` with the default single retry takes at most about 10 seconds. Other methods aren't retried on a timeout, as the server may already have acted on them. When no attempts are left, the request goes to your handlers as a `TimeoutError` with no `e.status`.
 
 ## Parsing error payloads
 
