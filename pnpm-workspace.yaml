@@ -3,3 +3,5 @@ allowBuilds:
   unrs-resolver: true
 onlyBuiltDependencies:
   - unrs-resolver
+overrides:
+  mocha>serialize-javascript: ^7.1.3
